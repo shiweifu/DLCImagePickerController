@@ -31,6 +31,9 @@
 @property (nonatomic, weak) IBOutlet UIButton *libraryToggleButton;
 @property (nonatomic, weak) IBOutlet UIButton *flashToggleButton;
 @property (nonatomic, weak) IBOutlet UIButton *retakeButton;
+@property (weak, nonatomic) IBOutlet UIButton *watermarkButton;
+
+@property (weak, nonatomic) IBOutlet UIPageControl *pageControl;
 
 @property (nonatomic, weak) IBOutlet UIScrollView *filterScrollView;
 @property (nonatomic, weak) IBOutlet UIImageView *filtersBackgroundImageView;
@@ -42,4 +45,12 @@
 @property (nonatomic, assign) CGFloat outputJPEGQuality;
 @property (nonatomic, assign) CGSize requestedImageSize;
 
+#pragma mark - waterMark
+@property(nonatomic) NSInteger waterMarkIndex;
+@property(nonatomic, strong) NSMutableArray *waterMarkArray;
+@property(nonatomic, strong)  UIImageView *waterMark;
+@property(nonatomic, strong)  UIImage *waterMarkImage;
+
+//@property(nonatomic, strong) NSMutableArray *waterMarkImageViewArray;
+//@property(nonatomic, strong) UIImageView *waterMarkImageView;
 @end

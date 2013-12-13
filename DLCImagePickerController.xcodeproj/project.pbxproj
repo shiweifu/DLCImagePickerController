@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		688D7AA61859C15100D4802F /* watermark1.png in Resources */ = {isa = PBXBuildFile; fileRef = 688D7AA51859C15000D4802F /* watermark1.png */; };
 		6A0D0A01165A1CBE0028E1B6 /* DLCBlurOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0D0A00165A1CBE0028E1B6 /* DLCBlurOverlayView.m */; };
 		6A0D0A0F165A1FFC0028E1B6 /* focus-crosshair.png in Resources */ = {isa = PBXBuildFile; fileRef = 6A0D0A0D165A1FFC0028E1B6 /* focus-crosshair.png */; };
 		6A0D0A10165A1FFC0028E1B6 /* focus-crosshair@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6A0D0A0E165A1FFC0028E1B6 /* focus-crosshair@2x.png */; };
@@ -117,6 +118,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		688D7AA51859C15000D4802F /* watermark1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = watermark1.png; sourceTree = "<group>"; };
 		6A0D09FF165A1CBE0028E1B6 /* DLCBlurOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DLCBlurOverlayView.h; sourceTree = "<group>"; };
 		6A0D0A00165A1CBE0028E1B6 /* DLCBlurOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DLCBlurOverlayView.m; sourceTree = "<group>"; };
 		6A0D0A0D165A1FFC0028E1B6 /* focus-crosshair.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "focus-crosshair.png"; sourceTree = "<group>"; };
@@ -231,6 +233,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		688D7AA41859C15000D4802F /* Watermark */ = {
+			isa = PBXGroup;
+			children = (
+				688D7AA51859C15000D4802F /* watermark1.png */,
+			);
+			path = Watermark;
+			sourceTree = "<group>";
+		};
 		6A55309215E4868000019CC9 /* FilterSamples */ = {
 			isa = PBXGroup;
 			children = (
@@ -340,6 +350,7 @@
 		6A5D9A8C15E02527001FAD14 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				688D7AA41859C15000D4802F /* Watermark */,
 				6A55309215E4868000019CC9 /* FilterSamples */,
 				7D643C2E15E05FBF0035A22D /* Samples */,
 				6A5D9A9215E02527001FAD14 /* Overlays */,
@@ -557,6 +568,7 @@
 				6A49CEFB15E461670098304F /* flash-auto@2x.png in Resources */,
 				6A49CEFC15E461670098304F /* flash-off.png in Resources */,
 				6A49CEFD15E461670098304F /* flash-off@2x.png in Resources */,
+				688D7AA61859C15100D4802F /* watermark1.png in Resources */,
 				6A49CEFE15E461670098304F /* flash.png in Resources */,
 				6A49CEFF15E461670098304F /* flash@2x.png in Resources */,
 				6A49CF0215E4617A0098304F /* front-camera.png in Resources */,

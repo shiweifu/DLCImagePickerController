@@ -20,6 +20,7 @@
     UIImageOrientation staticPictureOriginalOrientation;
     BOOL isStatic;
     BOOL hasBlur;
+    NSUInteger waterMarkIndex;
     int selectedFilter;
     dispatch_once_t showLibraryOnceToken;
 }
@@ -109,6 +110,22 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         [self setUpCamera];
     });
+
+  [self configureEvents];
+  [self configureView];
+}
+
+- (void)configureEvents {
+  [self addObserver:self
+       forKeyPath:@"waterMarkIndex"
+          options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
+          context:nil];
+}
+
+- (void)configureView {
+  //TODO we need set waterMark's count to pageControl.numberOfPages
+  self.pageControl.numberOfPages = 1;
+  [self pageChanged:self.pageControl];
 }
 
 -(void) viewWillAppear:(BOOL)animated {
@@ -338,6 +355,18 @@
 -(IBAction)toggleFlash:(UIButton *)button{
     [button setSelected:!button.selected];
 }
+- (IBAction)toggleWaterMark:(UIButton *)button {
+  [button setSelected:!button.selected];
+  
+  if(button.selected)
+  {
+    [self waterMarkOn];
+  }
+  else
+  {
+    [self waterMarkOff];
+  }
+}
 
 -(IBAction) toggleBlur:(UIButton*)blurButton {
     
@@ -473,8 +502,14 @@
         
         UIImage *currentFilteredVideoFrame = [processUpTo imageFromCurrentlyProcessedOutputWithOrientation:staticPictureOriginalOrientation];
 
+
+
+        UIImage *imageWithWaterMark = [self composeImage:self.waterMarkImage
+                                                 toImage:currentFilteredVideoFrame
+                                                 atFrame:self.waterMark.frame];
+
         NSDictionary *info = [[NSDictionary alloc] initWithObjectsAndKeys:
-                              UIImageJPEGRepresentation(currentFilteredVideoFrame, self.outputJPEGQuality), @"data", nil];
+                              UIImageJPEGRepresentation(imageWithWaterMark, self.outputJPEGQuality), @"data", nil];
         [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:info];
     }
 }
@@ -510,6 +545,11 @@
     [self.delegate imagePickerControllerDidCancel:self];
 }
 
+
+- (IBAction)handleSwipe:(id)sender {
+  NSLog(@"%@", @"swipe");
+}
+
 -(IBAction) handlePan:(UIGestureRecognizer *) sender {
     if (hasBlur) {
         CGPoint tapPoint = [sender locationInView:imageView];
@@ -538,6 +578,10 @@
             }
         }
     }
+}
+
+- (IBAction)pageChanged:(UIPageControl *)pageControl {
+  self.waterMarkIndex = pageControl.currentPage;
 }
 
 - (IBAction) handleTapToFocus:(UITapGestureRecognizer *)tgr{
@@ -703,14 +747,22 @@
 }
 
 -(void) dealloc {
-    [self removeAllTargets];
-    stillCamera = nil;
-    cropFilter = nil;
-    filter = nil;
-    blurFilter = nil;
-    staticPicture = nil;
-    self.blurOverlayView = nil;
-    self.focusView = nil;
+  [self removeAllTargets];
+  [self removeObserver:self
+            forKeyPath:@"waterMarkIndex"];
+
+  stillCamera = nil;
+  cropFilter = nil;
+  filter = nil;
+  blurFilter = nil;
+  staticPicture = nil;
+  self.blurOverlayView = nil;
+  self.focusView = nil;
+
+
+  //release strong property
+  self.waterMark = nil;
+  self.waterMarkArray = nil;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -754,6 +806,56 @@
     }
 }
 
+- (void)waterMarkOn {
+  NSLog(@"%@", @"mark on");
+  //show the page control
+  [self.pageControl setHidden:NO];
+
+  //TODO show the waterMark image view
+  [self.waterMark setHidden:NO];
+}
+
+- (void)waterMarkOff {
+  NSLog(@"%@", @"mark off");
+
+  //TODO hide the page control
+  [self.pageControl setHidden:YES];
+
+  //TODO hide the waterMark image view
+  [self.waterMark setHidden:YES];
+}
+
+- (id)waterMarkArray {
+
+  if(!_waterMarkArray)
+  {
+    _waterMarkArray = [NSMutableArray array];
+
+    //we need generate watermark imageView with info
+    UIImage *img = [UIImage imageNamed:@"watermark1.png"];
+
+    //draw info to watermark image
+    UIImageView *imgView = [[UIImageView alloc] initWithImage:img];
+    imgView.frame = CGRectMake(0, 0, 100, 95);
+    [self.imageView addSubview:imgView];
+    [imgView setHidden:YES];
+
+    [_waterMarkArray addObject:imgView];
+  }
+  return _waterMarkArray;
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object change:(NSDictionary *)change
+                       context:(void *)context {
+  if([keyPath isEqualToString:@"waterMarkIndex"])
+  {
+    self.waterMark = self.waterMarkArray[(NSUInteger)self.waterMarkIndex];
+    self.waterMarkImage = self.waterMark.image;
+  }
+}
+
+
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
 
 - (NSUInteger)supportedInterfaceOrientations {
@@ -761,5 +863,25 @@
 }
 
 #endif
+
+
+
+- (UIImage *)composeImage:(UIImage *)subImage toImage:(UIImage *)superImage atFrame:(CGRect)frame
+{
+  CGSize superSize = superImage.size;
+  CGFloat widthScale = frame.size.width / self.imageView.frame.size.width;
+  CGFloat heightScale = frame.size.height / self.imageView.frame.size.height;
+  CGFloat xScale = frame.origin.x / self.imageView.frame.size.width;
+  CGFloat yScale = frame.origin.y / self.imageView.frame.size.height;
+  CGRect subFrame = CGRectMake(xScale * superSize.width, yScale * superSize.height, widthScale * superSize.width, heightScale * superSize.height);
+
+  UIGraphicsBeginImageContextWithOptions(superSize, NO, 1.0);
+  [superImage drawInRect:CGRectMake(0, 0, superSize.width, superSize.height)];
+  [subImage drawInRect:subFrame];
+  __autoreleasing UIImage *finish = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  return finish;
+}
+
 
 @end
