@@ -508,11 +508,25 @@
                               UIImageJPEGRepresentation(imageWithWaterMark, self.outputJPEGQuality), @"data", nil];
         [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:info];
     }
+
+  [self showBlurOverlay:NO];
+  self.blurToggleButton.selected = NO;
+  [self.blurToggleButton setEnabled:NO];
 }
 
 -(IBAction) retakePhoto:(UIButton *)button {
     [self.retakeButton setHidden:YES];
     [self.libraryToggleButton setHidden:NO];
+
+
+  [self.blurToggleButton setEnabled:YES];
+  if(hasBlur)
+  {
+    [self toggleBlur:nil];
+  }
+
+
+
     staticPicture = nil;
     staticPictureOriginalOrientation = UIImageOrientationUp;
     isStatic = NO;
@@ -668,17 +682,12 @@
       ((GPUImageTiltShiftFilter *)blurFilter).topFocusLevel = tv;
       ((GPUImageTiltShiftFilter *)blurFilter).bottomFocusLevel = bv;
 
-      NSLog(@"topFocusLevel: %.2f", ((GPUImageTiltShiftFilter *)blurFilter).topFocusLevel);
-      NSLog(@"bottomFocusLevel: %.2f", ((GPUImageTiltShiftFilter *)blurFilter).bottomFocusLevel);
-
       [self.blurOverlayView setTopPoint:topFocusLevel*320
                             bottomPoint:bottomFocusLevel*320];
 
     }
 
-    NSLog(@"scale: %.2f", sender.scale);
-    NSLog(@"velocity: %.2f", sender.velocity);
-    NSLog(@"bv-tv: %.2f", bv-tv);
+//    NSLog(@"bv-tv: %.2f", bv-tv);
 
   }
 
