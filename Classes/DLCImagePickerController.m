@@ -124,8 +124,10 @@
 
 - (void)configureView {
   //TODO we need set waterMark's count to pageControl.numberOfPages
-  self.pageControl.numberOfPages = 1;
+  self.pageControl.numberOfPages = self.waterMarkArray.count;
   [self pageChanged:self.pageControl];
+
+  [self waterMarkOff];
 }
 
 -(void) viewWillAppear:(BOOL)animated {
@@ -525,39 +527,59 @@
     [self toggleBlur:nil];
   }
 
+  staticPicture = nil;
+  staticPictureOriginalOrientation = UIImageOrientationUp;
+  isStatic = NO;
+  [self removeAllTargets];
+  [stillCamera startCameraCapture];
+  [self.cameraToggleButton setEnabled:YES];
 
+  if([UIImagePickerController isSourceTypeAvailable: UIImagePickerControllerSourceTypeCamera]
+     && stillCamera
+     && [stillCamera.inputCamera hasTorch]) {
+      [self.flashToggleButton setEnabled:YES];
+  }
 
-    staticPicture = nil;
-    staticPictureOriginalOrientation = UIImageOrientationUp;
-    isStatic = NO;
-    [self removeAllTargets];
-    [stillCamera startCameraCapture];
-    [self.cameraToggleButton setEnabled:YES];
-    
-    if([UIImagePickerController isSourceTypeAvailable: UIImagePickerControllerSourceTypeCamera]
-       && stillCamera
-       && [stillCamera.inputCamera hasTorch]) {
-        [self.flashToggleButton setEnabled:YES];
-    }
-    
-    [self.photoCaptureButton setImage:[UIImage imageNamed:@"camera-icon"] forState:UIControlStateNormal];
-    [self.photoCaptureButton setTitle:nil forState:UIControlStateNormal];
-    
-    if ([self.filtersToggleButton isSelected]) {
-        [self hideFilters];
-    }
-    
-    [self setFilter:selectedFilter];
-    [self prepareFilter];
+  [self.photoCaptureButton setImage:[UIImage imageNamed:@"camera-icon"] forState:UIControlStateNormal];
+  [self.photoCaptureButton setTitle:nil forState:UIControlStateNormal];
+
+  if ([self.filtersToggleButton isSelected]) {
+      [self hideFilters];
+  }
+
+  [self setFilter:selectedFilter];
+  [self prepareFilter];
 }
 
 -(IBAction) cancel:(id)sender {
     [self.delegate imagePickerControllerDidCancel:self];
 }
 
+- (IBAction)handleSwipeLeft:(id)sender {
+  if(self.hasWaterMark)
+  {
+    if(self.pageControl.currentPage >= 1)
+    {
+      self.pageControl.currentPage -= 1;
+      self.waterMarkIndex = self.pageControl.currentPage;
+    }
+  }
+}
 
 - (IBAction)handleSwipe:(id)sender {
-  NSLog(@"%@", @"swipe");
+
+  if(self.hasWaterMark)
+  {
+    if(self.pageControl.currentPage < self.pageControl.numberOfPages-1)
+    {
+      self.pageControl.currentPage += 1;
+      self.waterMarkIndex = self.pageControl.currentPage;
+    }
+  }
+
+
+
+
 }
 
 -(IBAction) handlePan:(UIGestureRecognizer *) sender {
@@ -893,21 +915,25 @@
 
 - (void)waterMarkOn {
   NSLog(@"%@", @"mark on");
-  //show the page control
   [self.pageControl setHidden:NO];
-
-  //TODO show the waterMark image view
   [self.waterMark setHidden:NO];
+
+  [self.waterMark removeFromSuperview];
+  [self.imageView addSubview:self.waterMark];
+  self.hasWaterMark = YES;
+
 }
 
 - (void)waterMarkOff {
   NSLog(@"%@", @"mark off");
 
-  //TODO hide the page control
+  //hide the page control
   [self.pageControl setHidden:YES];
 
-  //TODO hide the waterMark image view
+  //hide the waterMark image view
   [self.waterMark setHidden:YES];
+
+  self.hasWaterMark = NO;
 }
 
 - (id)waterMarkArray {
@@ -917,14 +943,42 @@
     _waterMarkArray = [NSMutableArray array];
 
     //we need generate watermark imageView with info
-    UIImage *img = [UIImage imageNamed:@"watermark1.png"];
+    UIImage *img = [UIImage imageNamed:@"watermark_postmark2.png"];
 
     //draw info to watermark image
     UIImageView *imgView = [[UIImageView alloc] initWithImage:img];
-    imgView.frame = CGRectMake(0, 0, 100, 95);
+    imgView.frame = CGRectMake(0, 0, img.size.width, img.size.height);
     [self.imageView addSubview:imgView];
-    [imgView setHidden:YES];
+    [_waterMarkArray addObject:imgView];
 
+    UIImage *waterMarkLineImg = [UIImage imageNamed:@"watermark_line.png"];
+    UIImageView *waterMarkLineImgView = [[UIImageView alloc] initWithImage:img];
+    waterMarkLineImgView.frame = CGRectMake(0, 0, waterMarkLineImg.size.width, waterMarkLineImg.size.height);
+    [waterMarkLineImgView setHidden:YES];
+    [_waterMarkArray addObject:waterMarkLineImgView];
+    [UIImage imageNamed:@"watermark_postmark1.png"]; //the watermark image's size was error
+
+    UIImage *waterMarkCakeImg = [UIImage imageNamed:@"watwemark_cake.png"];
+    UIImageView *waterMarkCakeImgView = [[UIImageView alloc] initWithImage:waterMarkCakeImg];
+    waterMarkCakeImgView.frame = CGRectMake(0, 0, waterMarkCakeImg.size.width, waterMarkCakeImg.size.height);
+    [waterMarkCakeImgView setHidden:YES];
+    [_waterMarkArray addObject:waterMarkCakeImgView];
+
+
+    img = [UIImage imageNamed:@"watwemark_snow.png"];
+    imgView = [[UIImageView alloc] initWithImage:img];
+    imgView.frame = CGRectMake(0, 0, img.size.width, img.size.height);
+    [_waterMarkArray addObject:imgView];
+
+
+    img = [UIImage imageNamed:@"watwemark_sun.png"];
+    imgView = [[UIImageView alloc] initWithImage:img];
+    imgView.frame = CGRectMake(0, 0, img.size.width, img.size.height);
+    [_waterMarkArray addObject:imgView];
+
+    img = [UIImage imageNamed:@"watwemark_umbrella.png"];
+    imgView = [[UIImageView alloc] initWithImage:img];
+    imgView.frame = CGRectMake(0, 0, img.size.width, img.size.height);
     [_waterMarkArray addObject:imgView];
   }
   return _waterMarkArray;
@@ -935,8 +989,22 @@
                        context:(void *)context {
   if([keyPath isEqualToString:@"waterMarkIndex"])
   {
+    if(self.waterMark)
+    {
+      [self.waterMark setHidden:YES];
+    }
     self.waterMark = self.waterMarkArray[(NSUInteger)self.waterMarkIndex];
     self.waterMarkImage = self.waterMark.image;
+
+    [self.pageControl setHidden:NO];
+    [self.waterMark setHidden:NO];
+
+    [self.waterMark removeFromSuperview];
+    [self.imageView addSubview:self.waterMark];
+
+
+
+
   }
 }
 

@@ -53,4 +53,5 @@
 
 //@property(nonatomic, strong) NSMutableArray *waterMarkImageViewArray;
 //@property(nonatomic, strong) UIImageView *waterMarkImageView;
+@property(nonatomic) BOOL hasWaterMark;
 @end

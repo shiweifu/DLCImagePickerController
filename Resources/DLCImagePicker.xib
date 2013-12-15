@@ -49,6 +49,7 @@
                         <outletCollection property="gestureRecognizers" destination="65" appends="YES" id="66"/>
                         <outletCollection property="gestureRecognizers" destination="89" appends="YES" id="90"/>
                         <outletCollection property="gestureRecognizers" destination="PIX-up-6Sq" appends="YES" id="WLk-Z4-JCp"/>
+                        <outletCollection property="gestureRecognizers" destination="rzP-5w-71Z" appends="YES" id="VHB-Lv-X2K"/>
                     </connections>
                 </view>
                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="dock_bg.png" id="71">
@@ -225,9 +226,14 @@
                 <action selector="handleTapToFocus:" destination="-1" id="91"/>
             </connections>
         </tapGestureRecognizer>
-        <swipeGestureRecognizer enabled="NO" direction="right" id="PIX-up-6Sq">
+        <swipeGestureRecognizer direction="left" id="PIX-up-6Sq">
             <connections>
-                <action selector="handleSwipe:" destination="-1" id="Qte-yJ-Ggf"/>
+                <action selector="handleSwipe:" destination="-1" id="FHi-sM-fVb"/>
+            </connections>
+        </swipeGestureRecognizer>
+        <swipeGestureRecognizer direction="right" id="rzP-5w-71Z">
+            <connections>
+                <action selector="handleSwipeLeft:" destination="-1" id="p6l-2J-dTy"/>
             </connections>
         </swipeGestureRecognizer>
     </objects>
