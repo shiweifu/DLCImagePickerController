@@ -369,7 +369,6 @@
 }
 
 -(IBAction) toggleBlur:(UIButton*)blurButton {
-    
     [self.blurToggleButton setEnabled:NO];
     [self removeAllTargets];
     
@@ -384,11 +383,11 @@
 
         }
         hasBlur = YES;
-//        CGPoint excludePoint = [(GPUImageGaussianSelectiveBlurFilter*)blurFilter excludeCirclePoint];
-//		CGSize frameSize = self.blurOverlayView.frame.size;
-//		self.blurOverlayView.circleCenter = CGPointMake(excludePoint.x * frameSize.width, excludePoint.y * frameSize.height);
-        [self.blurToggleButton setSelected:YES];
-        [self flashBlurOverlay];
+      [self.blurOverlayView setTopPoint:127.0
+                            bottomPoint:192.0];
+      [self.blurToggleButton setSelected:YES];
+        [self showBlurOverlay:YES];
+//        [self flashBlurOverlay];
     }
     
     [self prepareFilter];
@@ -509,13 +508,6 @@
                               UIImageJPEGRepresentation(imageWithWaterMark, self.outputJPEGQuality), @"data", nil];
         [self.delegate imagePickerController:self didFinishPickingMediaWithInfo:info];
     }
-
-
-
-
-
-
-
 }
 
 -(IBAction) retakePhoto:(UIButton *)button {
