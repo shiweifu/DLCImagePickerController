@@ -44,24 +44,34 @@
 }
 
 - (void)drawRect:(CGRect)rect {
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    size_t numLocations = 2;
-    CGFloat locations[2] = {0.0, 1.0};
-    CGFloat components[8] = {1.0,1.0,1.0, 0.0,
-        1.0, 1.0, 1.0, 1.0};
-    
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    CGGradientRef gradient = CGGradientCreateWithColorComponents(colorSpace,
-                                                                   components,
-                                                                   locations,
-                                                                   numLocations);
-    CGPoint center = CGPointMake(CGRectGetMidX(holeRect),CGRectGetMidY(holeRect));
-    CGContextDrawRadialGradient(context, gradient, center,
-								 self.radius - 25.0, center, self.radius,
-								 kCGGradientDrawsAfterEndLocation);
-    CGColorSpaceRelease(colorSpace);
-    CGGradientRelease(gradient);
+  CGContextRef context = UIGraphicsGetCurrentContext();
+
+  // Drawing lines with a white stroke color
+  CGContextSetRGBStrokeColor(context, 1.0, 1.0, 1.0, 1.0);
+  // Draw them with a 2.0 stroke width so they are a bit more visible.
+  CGContextSetLineWidth(context, 1.0);
+
+  // Draw a connected sequence of line segments
+  CGPoint addLines[] =
+          {
+                  CGPointMake(0.0, self.topPoint),
+                  CGPointMake(320.0, self.topPoint),
+                  CGPointMake(0.0, self.bottomPoint),
+                  CGPointMake(320.0, self.bottomPoint),
+          };
+  CGContextStrokeLineSegments(context, addLines, sizeof(addLines)/sizeof(addLines[0]));
+  CGContextStrokePath(context);
+}
+
+
+- (void)setTopPoint:(CGFloat)topPoint
+        bottomPoint:(CGFloat)bottomPoint
+{
+  _topPoint = topPoint;
+  _bottomPoint = bottomPoint;
+  [self setNeedsDisplay];
 }
 
 
 @end
+

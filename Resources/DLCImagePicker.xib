@@ -210,7 +210,7 @@
             </subviews>
             <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
         </view>
-        <pinchGestureRecognizer enabled="NO" id="51">
+        <pinchGestureRecognizer id="51">
             <connections>
                 <action selector="handlePinch:" destination="-1" id="63"/>
             </connections>
@@ -225,7 +225,7 @@
                 <action selector="handleTapToFocus:" destination="-1" id="91"/>
             </connections>
         </tapGestureRecognizer>
-        <swipeGestureRecognizer direction="right" id="PIX-up-6Sq">
+        <swipeGestureRecognizer enabled="NO" direction="right" id="PIX-up-6Sq">
             <connections>
                 <action selector="handleSwipe:" destination="-1" id="Qte-yJ-Ggf"/>
             </connections>

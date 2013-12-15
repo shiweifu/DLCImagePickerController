@@ -13,4 +13,10 @@
 @property (nonatomic, assign) CGFloat radius;
 @property (nonatomic, assign) CGPoint circleCenter;
 
+@property(nonatomic) CGFloat topPoint;
+@property(nonatomic) CGFloat bottomPoint;
+
+- (void)setTopPoint:(CGFloat)topPoint
+        bottomPoint:(CGFloat)bottomPoint;
+
 @end
